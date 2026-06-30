@@ -1,23 +1,21 @@
-const nodemailer = require('nodemailer')
+const Brevo = require('@getbrevo/brevo')
 
 const sendEmail = async ({ to, subject, html }) => {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,  // port 465 requires secure: true
-    family: 4,     // force IPv4
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  })
+  const apiInstance = new Brevo.TransactionalEmailsApi()
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to,
-    subject,
-    html,
-  })
+  apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY
+
+  const sendSmtpEmail = new Brevo.SendSmtpEmail()
+
+  sendSmtpEmail.subject = subject
+  sendSmtpEmail.htmlContent = html
+  sendSmtpEmail.sender = {
+    name: 'DLFS UniLag',
+    email: process.env.EMAIL_USER,
+  }
+  sendSmtpEmail.to = [{ email: to }]
+
+  await apiInstance.sendTransacEmail(sendSmtpEmail)
 }
 
 module.exports = sendEmail
