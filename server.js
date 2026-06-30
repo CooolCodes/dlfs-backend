@@ -12,6 +12,7 @@ app.use(
     origin: [
     'http://localhost:5173',
     'https://dlfs-frontend.vercel.app',
+    /\.vercel\.app$/,
   ],
     credentials: true,
   }),
