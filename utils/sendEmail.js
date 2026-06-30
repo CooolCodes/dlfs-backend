@@ -1,4 +1,6 @@
 const nodemailer = require("nodemailer");
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
 
 const sendEmail = async ({ to, subject, html }) => {
   console.log("Attempting to send email to:", to);
@@ -8,6 +10,7 @@ const sendEmail = async ({ to, subject, html }) => {
     host: process.env.EMAIL_HOST,
     port: Number(process.env.EMAIL_PORT),
     secure: false,
+    family: 4,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
