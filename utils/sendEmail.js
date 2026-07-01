@@ -1,4 +1,5 @@
 const sendEmail = async ({ to, subject, html }) => {
+  console.log('EMAIL_FROM value:', process.env.EMAIL_FROM);
   const response = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
