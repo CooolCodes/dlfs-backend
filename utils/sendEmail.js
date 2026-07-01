@@ -1,28 +1,26 @@
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS,
-  },
-});
-
 const sendEmail = async ({ to, subject, html }) => {
-  try {
-    await transporter.sendMail({
-      from: `"DLFS" <${process.env.EMAIL_FROM}>`,
-      to,
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'content-type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { email: process.env.EMAIL_FROM, name: 'DLFS' },
+      to: [{ email: to }],
       subject,
-      html,
-    });
-    console.log('Email sent successfully to:', to);
-  } catch (error) {
-    console.error('Email error:', error.message);
-    throw error;
+      htmlContent: html,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    console.error('Brevo error:', error);
+    throw new Error(error.message || 'Failed to send email');
   }
+
+  console.log('Email sent successfully to:', to);
 };
 
 module.exports = sendEmail;
