@@ -1,21 +1,22 @@
-const Brevo = require('@getbrevo/brevo')
+const { TransactionalEmailsApi, SendSmtpEmail, ApiClient } = require('@getbrevo/brevo');
+
+const apiInstance = new TransactionalEmailsApi();
+apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
 const sendEmail = async ({ to, subject, html }) => {
-  const apiInstance = new Brevo.TransactionalEmailsApi()
+  try {
+    const sendSmtpEmail = new SendSmtpEmail();
+    sendSmtpEmail.sender = { email: process.env.EMAIL_FROM, name: 'DLFS' };
+    sendSmtpEmail.to = [{ email: to }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
 
-  apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY
-
-  const sendSmtpEmail = new Brevo.SendSmtpEmail()
-
-  sendSmtpEmail.subject = subject
-  sendSmtpEmail.htmlContent = html
-  sendSmtpEmail.sender = {
-    name: 'DLFS UniLag',
-    email: process.env.EMAIL_USER,
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('Email sent successfully:', result.response?.statusCode);
+  } catch (error) {
+    console.error('Brevo error:', error.response?.body || error.message);
+    throw error;
   }
-  sendSmtpEmail.to = [{ email: to }]
+};
 
-  await apiInstance.sendTransacEmail(sendSmtpEmail)
-}
-
-module.exports = sendEmail
+module.exports = sendEmail;
