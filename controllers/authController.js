@@ -70,20 +70,27 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    const user = await User.create({
-      name,
-      email: normalizedEmail,
-      passwordHash,
-      studentId,
-      role,
-    })
+  const user = await User.create({
+  name,
+  email: normalizedEmail,
+  passwordHash,
+  studentId,
+  role,
+})
 
-    await sendVerificationEmail(user)
+try {
+  await sendVerificationEmail(user)
+} catch (emailError) {
+  console.error('Verification email failed:', emailError.message)
+  await User.findByIdAndDelete(user._id)
+  return res.status(500).json({
+    message: 'Could not send verification email. Please try again.',
+  })
+}
 
-    // No token issued at registration — user must verify first
-    res.status(201).json({
-      message: 'Account created. Please check your email to verify your account before signing in.',
-    })
+res.status(201).json({
+  message: 'Account created. Please check your email to verify your account before signing in.',
+})
 
   } catch (error) {
     console.error(error)
