@@ -11,7 +11,8 @@ app.use(
   cors({
     origin: [
     'http://localhost:5173',
-    'https://dlfs-frontend.vercel.app',
+    'https://dlfs.app',
+    'https://www.dlfs.app',
     /\.vercel\.app$/,
   ],
     credentials: true,
