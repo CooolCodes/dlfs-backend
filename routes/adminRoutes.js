@@ -19,10 +19,12 @@ router.get("/items", getItemsByStatus);
 router.patch("/items/:id/approve", approveItem);
 router.patch("/items/:id/reject", rejectItem);
 router.delete("/items/:id", deleteItem);
+router.patch("/items/:id/revoke", revokeItem);
 
 router.get("/claims", getClaims);
 router.patch("/claims/:id/approve", approveClaim);
 router.patch("/claims/:id/reject", rejectClaim);
+
 
 router.get("/stats", getStats);
 

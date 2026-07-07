@@ -310,6 +310,28 @@ const rejectClaim = async (req, res) => {
   }
 };
 
+// PATCH /api/admin/items/:id/revoke — send an approved item back to pending
+const revokeItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    if (item.status !== "approved") {
+      return res
+        .status(400)
+        .json({ message: `Only approved items can be revoked` });
+    }
+
+    item.status = "pending";
+    await item.save();
+
+    res.json({ message: "Item revoked and returned to pending review", item });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // GET /api/admin/stats  — dashboard analytics
 const getStats = async (req, res) => {
   try {
@@ -350,7 +372,7 @@ module.exports = {
   getItemsByStatus,
   approveItem,
   rejectItem,
-  deleteItem,
+  revokeItem,
   getClaims,
   approveClaim,
   rejectClaim,
