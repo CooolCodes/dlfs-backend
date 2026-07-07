@@ -4,7 +4,7 @@ const {
   getItemsByStatus,
   approveItem,
   rejectItem,
-  deleteItem,
+  revokeItem,
   getClaims,
   approveClaim,
   rejectClaim,
@@ -18,7 +18,7 @@ router.use(protect, adminOnly);
 router.get("/items", getItemsByStatus);
 router.patch("/items/:id/approve", approveItem);
 router.patch("/items/:id/reject", rejectItem);
-router.delete("/items/:id", deleteItem);
+//router.delete("/items/:id", deleteItem);
 router.patch("/items/:id/revoke", revokeItem);
 
 router.get("/claims", getClaims);
