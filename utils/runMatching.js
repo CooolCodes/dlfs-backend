@@ -9,10 +9,13 @@ const runMatching = async (newItem) => {
     // Find all approved items of the opposite type
     const oppositeType = newItem.type === "lost" ? "found" : "lost";
 
+    // Compare against ALL approved opposite-type items, not just same-category
+    // ones. Category is a scoring signal (CategoryMatch, weight 0.20), not a
+    // filter — an item logged under the wrong category should still be
+    // findable via title/description similarity, just scored lower.
     const candidates = await Item.find({
       type: oppositeType,
       status: "approved",
-      category: newItem.category, // only compare same category for efficiency
     }).populate("reportedBy", "name email");
 
     console.log(
@@ -68,7 +71,7 @@ const notifyMatch = async (newItem, matchedItem, score) => {
 
     const { name, email } = lostItemPopulated.reportedBy;
     const matchPercent = Math.round(score * 100);
-    const itemURL = `http://localhost:5173/items/${foundItem._id}`;
+    const itemURL = `https://dlfs.app/items/${foundItem._id}`;
 
     await sendEmail({
       to: email,

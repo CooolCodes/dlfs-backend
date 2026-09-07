@@ -94,8 +94,10 @@ const getCategoryMatch = (cat1, cat2) => {
 
 // ─── Composite Scoring ───────────────────────────────────────────────────────
 // Combines all similarity measures into a single weighted score
-// Score = 0.25 × TitleSim + 0.35 × DescSim + 0.30 × ImageSim + 0.10 × CategoryMatch
-// ImageSim defaults to 0 until pHash is implemented in semester 2
+// Score = 0.35 × TitleSim + 0.45 × DescSim + 0.20 × CategoryMatch
+// CategoryMatch is intentionally the smallest weight: it down-weights
+// cross-category pairs without eliminating them outright (see runMatching.js,
+// which no longer pre-filters candidates by category for the same reason).
 const computeMatchScore = (itemA, itemB) => {
   const titleSim = getTitleSimilarity(itemA.title, itemB.title);
   const descSim = getDescriptionSimilarity(
@@ -104,18 +106,13 @@ const computeMatchScore = (itemA, itemB) => {
   );
   const categoryMatch = getCategoryMatch(itemA.category, itemB.category);
 
-  // Image similarity placeholder — will be replaced with pHash comparison
-  const imageSim = 0;
-
-  const score =
-    0.25 * titleSim + 0.35 * descSim + 0.3 * imageSim + 0.1 * categoryMatch;
+  const score = 0.35 * titleSim + 0.45 * descSim + 0.2 * categoryMatch;
 
   return {
     score: Math.round(score * 100) / 100, // round to 2 decimal places
     breakdown: {
       titleSim: Math.round(titleSim * 100) / 100,
       descSim: Math.round(descSim * 100) / 100,
-      imageSim,
       categoryMatch,
     },
   };
